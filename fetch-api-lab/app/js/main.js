@@ -28,34 +28,80 @@ function logError(error) {
 // Fetch JSON ----------
 
 function fetchJSON() {
-  // TODO
+  fetch('examples/animals.json') // 1
+  .then(validateResponse) // 2
+  .then(readResponseAsJSON) // 3
+  .then(logResult) // 4
+  .catch(logError);
 }
 const jsonButton = document.getElementById('json-btn');
 jsonButton.addEventListener('click', fetchJSON);
 
+function validateResponse(response) {
+  if (!response.ok) {
+    throw Error(response.statusText);
+  }
+  return response;
+}
+
+function readResponseAsJSON(response) {
+  return response.json();
+}
 
 // Fetch Image ----------
 
-function fetchImage() {
-  // TODO
+function showImage(responseAsBlob) {
+  const container = document.getElementById('img-container');
+  const imgElem = document.createElement('img');
+  container.appendChild(imgElem);
+  const imgUrl = URL.createObjectURL(responseAsBlob);
+  imgElem.src = imgUrl;
 }
 const imgButton = document.getElementById('img-btn');
 imgButton.addEventListener('click', fetchImage);
 
+function readResponseAsBlob(response) {
+  return response.blob();
+}
 
+function fetchImage() {
+  fetch('examples/fetching.jpg')
+    .then(validateResponse)
+    .then(readResponseAs)
+    .then(showImage)
+    .catch(logError);
+}
 // Fetch text ----------
 
 function fetchText() {
-  // TODO
+  fetch('examples/words.txt')
+  .then(validateResponse)
+  .then(readResponseAsText)
+  .then(showText)
+  .catch(logError); // TODO
 }
 const textButton = document.getElementById('text-btn');
 textButton.addEventListener('click', fetchText);
 
+function showText(responseAsText) {
+  const message = document.getElementById('message');
+  message.textContent = responseAsText;
+}
+
+function readResponseAsText(response) {
+  return response.text();
+}
 
 // HEAD request ----------
 
 function headRequest() {
-  // TODO
+  fetch('examples/words.txt', {
+    method: 'HEAD'
+  })
+  .then(validateResponse)
+  .then(readResponseAsText)
+  .then(logResult)
+  .catch(logError);
 }
 const headButton = document.getElementById('head-btn');
 headButton.addEventListener('click', headRequest);
@@ -65,7 +111,14 @@ headButton.addEventListener('click', headRequest);
 
 /* NOTE: Never send unencrypted user credentials in production! */
 function postRequest() {
-  // TODO
+  fetch('http://localhost:5000/', {
+    method: 'POST',
+    body: 'name=david&message=hello'
+  })
+    .then(validateResponse)
+    .then(readResponseAsText)
+    .then(showText)
+    .catch(logError);
 }
 const postButton = document.getElementById('post-btn');
 postButton.addEventListener('click', postRequest);
